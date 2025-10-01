@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barang Masuk - Smart Farm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+     <!--Top Header -->
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #fbbf24; height: 60px;">
+        <div class="container-fluid">
+            <button class="btn btn-outline-dark me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="navbar-brand mb-0 h1 text-dark fw-bold">STOK BARANG</span>
+            <div class="ms-auto">
+                <span class="text-dark me-3 d-flex align-items-center">
+                    <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Profile" id="navbarProfilePicture" style="width: 32px; height: 32px; object-fit: cover;">
+                    <span id="currentUser">admin</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="offcanvas offcanvas-start sidebar-dark" tabindex="-1" id="sidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white">MAIN NAVIGATION</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="data-barang.html">
+                        <i class="fas fa-boxes"></i> Data Barang
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="toggleSubmenu(event)">
+                        <i class="fas fa-cog"></i> Kelola Barang
+                        <i class="fas fa-chevron-down float-end mt-1"></i>
+                    </a>
+                    <ul class="submenu" style="display: block;">
+                        <li><a class="nav-link ps-4 active" href="barang-masuk.html">Barang Masuk</a></li>
+                        <li><a class="nav-link ps-4" href="barang-keluar.html">Barang Keluar</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="kelola-toko.html">
+                        <i class="fas fa-store"></i> Kelola Toko
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">
+                        <i class="fas fa-user"></i> Profil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- main content-->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2><i class="fas fa-shopping-cart"></i> Barang Masuk</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a class="nav-link" href="dashboard.html"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active">Barang Masuk</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-column flex-md-row gap-2">
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#inboundModal">
+                            <i class="fas fa-plus"></i> Tambah Barang Masuk
+                        </button>
+                        <button class="btn btn-info" onclick="printInbound()">
+                            <i class="fas fa-print"></i> Cetak Barang Masuk
+                        </button>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 mb-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <label class="me-1 me-md-2">Show</label>
+                            <select class="form-select form-select-sm me-md-2 w-auto" id="entriesPerPage">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span class="me-md-3">entries</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="me-1 me-md-2">Search:</label>
+                            <input type="text" class="form-control form-control-sm w-100 w-md-auto" id="searchInput">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Kode Barang</th>
+                                    <th>Tanggal</th>
+                                    <th>Jumlah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inboundTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-2 mt-3">
+                        <div>
+                            <span id="entriesInfo">Showing 1 to 6 of 6 entries</span>
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0" id="pagination">
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <!--inbound modal -->
+    <div class="modal fade" id="inboundModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-cart"></i> Tambah Barang Masuk
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="inboundForm">
+                        <div class="mb-3">
+                            <label for="kodeBarang" class="form-label">Kode Barang</label>
+                            <select class="form-select" id="kodeBarang" required>
+                                <option value="">Pilih Kode Barang</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jumlah" class="form-label">Jumlah</label>
+                            <input type="number" class="form-control" id="jumlah" placeholder="10" min="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Reset
+                    </button>
+                    <button type="button" class="btn btn-warning" id="saveInboundBtn">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--iem Selector Modal -->
+    <div class="modal fade" id="itemSelectorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-list"></i> Pilih Kode Barang
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>-- Pilih Kode Barang --</strong>
+                    </div>
+                    <div id="itemSelector">
+                         Items will be populated here 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        let currentPage = 1;
+        let entriesPerPage = 10;
+
+        $(document).ready(function() {
+            checkAuth();
+            initializeSampleItems(); // Initialize sample items data
+            loadItemsForSelect(); // Load items into dropdown
+            loadInboundData();
+            loadUserProfile();
+            
+            // Set today's date as default
+            $('#tanggal').val(new Date().toISOString().split('T')[0]);
+
+            // Initialize sample data if empty
+            if (!localStorage.getItem('inbound')) {
+                initializeSampleInbound();
+            }
+
+            // Event listeners
+            $('#saveInboundBtn').on('click', saveInbound);
+
+        });
+
+        /**
+         * Loads user profile from localStorage and updates navbar display
+         * This keeps the navbar synchronized with profile changes made in profile.html
+         */
+        function loadUserProfile() {
+            // Get user profile data from localStorage
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            
+            // Update navbar profile picture if available
+            if (profile.profilePicture) {
+                $('#navbarProfilePicture').attr('src', profile.profilePicture);
+            }
+            
+            // Update navbar user name with full name
+            // Combine first name and last name, or use 'admin' as default
+            const fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+            const displayName = fullName || 'admin';
+            $('#currentUser').text(displayName);
+        }
+
+        function loadItemsForSelect() {
+            const items = JSON.parse(localStorage.getItem('items') || '[]');
+            let options = '<option value="">Pilih Kode Barang</option>';
+            
+            items.forEach(item => {
+                options += `<option value="${item.kodeBarang}">${item.kodeBarang} - ${item.namaBarang}</option>`;
+            });
+            
+            $('#kodeBarang').html(options);
+        }
+
+        function loadInboundData() {
+            const inbound = JSON.parse(localStorage.getItem('inbound') || '[]');
+
+            // Render table
+            let html = '';
+            inbound.forEach((item, index) => {
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.kodeBarang}</td>
+                        <td>${formatDate(item.tanggal)}</td>
+                        <td>${item.jumlah}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm me-1" onclick="editInbound(${item.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteInbound(${item.id})">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            $('#inboundTableBody').html(html || '<tr><td colspan="5" class="text-center">No data found</td></tr>');
+        }
+
+        function initializeSampleInbound() {
+            const sampleInbound = [
+                { id: 1, kodeBarang: 'KD07', tanggal: '2025-09-25', jumlah: 10 }
+            ];
+            localStorage.setItem('inbound', JSON.stringify(sampleInbound));
+        }
+
+        function saveInbound() {
+            const kodeBarang = $('#kodeBarang').val();
+            const tanggal = $('#tanggal').val();
+            const jumlah = parseInt($('#jumlah').val());
+
+            if (!kodeBarang || !tanggal || !jumlah) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const inbound = JSON.parse(localStorage.getItem('inbound') || '[]');
+            const newId = inbound.length > 0 ? Math.max(...inbound.map(item => item.id)) + 1 : 1;
+            
+            inbound.push({ id: newId, kodeBarang, tanggal, jumlah });
+            localStorage.setItem('inbound', JSON.stringify(inbound));
+            
+            loadInboundData();
+            bootstrap.Modal.getInstance($('#inboundModal')[0]).hide();
+            
+            // Reset form
+            $('#inboundForm')[0].reset();
+            $('#tanggal').val(new Date().toISOString().split('T')[0]);
+            
+            alert('Data barang masuk berhasil ditambahkan');
+        }
+
+        function editInbound(id) {
+            // Implementation for editing inbound data
+            alert('Edit functionality not implemented yet');
+        }
+
+        function deleteInbound(id) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                const inbound = JSON.parse(localStorage.getItem('inbound') || '[]');
+                const updatedInbound = inbound.filter(item => item.id !== id);
+                localStorage.setItem('inbound', JSON.stringify(updatedInbound));
+                loadInboundData();
+                alert('Data berhasil dihapus');
+            }
+        }
+
+        function printInbound() {
+            alert('Print functionality not implemented yet');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function checkAuth() {
+            // Simple auth check - implement as needed
+            const currentUser = localStorage.getItem('currentUser') || 'Soleh';
+            $('#currentUser').text(currentUser);
+        }
+    </script>
+</body>
+</html>
